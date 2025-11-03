@@ -10,13 +10,35 @@ use Inertia\Inertia;
 
 class InscricaoController extends Controller
 {
-    public function index()
-    {
-        $inscricoes = Inscricao::with(['estudante', 'disciplina'])->get();
-        return Inertia::render('Inscricoes/Index', [
-            'c_inscricoes' => $inscricoes
-        ]);
+   public function index(Request $request)
+{
+    $query = Inscricao::with(['estudante', 'disciplina']);
+    
+    // Filtros
+    if ($request->has('disciplina_nome') && $request->disciplina_nome) {
+        $query->whereHas('disciplina', function($q) use ($request) {
+            $q->where('nome', 'LIKE', "%{$request->disciplina_nome}%");
+        });
     }
+    
+    if ($request->has('estudante_nome') && $request->estudante_nome) {
+        $query->whereHas('estudante', function($q) use ($request) {
+            $q->where('nome', 'LIKE', "%{$request->estudante_nome}%")
+              ->orWhere('apelido', 'LIKE', "%{$request->estudante_nome}%");
+        });
+    }
+    
+    if ($request->has('ano') && $request->ano) {
+        $query->whereYear('data_inscricao', $request->ano);
+    }
+    
+    $inscricoes = $query->get();
+
+    return Inertia::render('Inscricoes/Index', [
+        'c_inscricoes' => $inscricoes,
+        'filters' => $request->only(['disciplina_nome', 'estudante_nome', 'ano'])
+    ]);
+}
 
     public function create()
     {

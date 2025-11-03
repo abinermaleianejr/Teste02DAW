@@ -7,6 +7,12 @@ export default function Create() {
     apelido: "",
     nome: "",
     curso_id: "",
+    sexo: "M",
+    nacionalidade: "Moçambicana",
+    periodo: "Laboral",
+    email: "",
+    contacto: "",
+    ano_matricula: new Date().getFullYear()
   });
 
   const submit = (e) => {
@@ -32,30 +38,116 @@ export default function Create() {
           {errors.codigo && <p className="text-red-500 text-sm mt-1">{errors.codigo}</p>}
         </div>
 
-        {/* Apelido */}
-        <div>
-          <label className="block font-medium mb-1 text-gray-700">Apelido:</label>
-          <input
-            type="text"
-            placeholder="Apelido"
-            value={data.apelido}
-            onChange={(e) => setData("apelido", e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          {errors.apelido && <p className="text-red-500 text-sm mt-1">{errors.apelido}</p>}
+        {/* Nome e Apelido */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Nome:</label>
+            <input
+              type="text"
+              placeholder="Nome"
+              value={data.nome}
+              onChange={(e) => setData("nome", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {errors.nome && <p className="text-red-500 text-sm mt-1">{errors.nome}</p>}
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Apelido:</label>
+            <input
+              type="text"
+              placeholder="Apelido"
+              value={data.apelido}
+              onChange={(e) => setData("apelido", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {errors.apelido && <p className="text-red-500 text-sm mt-1">{errors.apelido}</p>}
+          </div>
         </div>
 
-        {/* Nome */}
-        <div>
-          <label className="block font-medium mb-1 text-gray-700">Nome:</label>
-          <input
-            type="text"
-            placeholder="Nome"
-            value={data.nome}
-            onChange={(e) => setData("nome", e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          {errors.nome && <p className="text-red-500 text-sm mt-1">{errors.nome}</p>}
+        {/* Sexo e Nacionalidade */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Sexo:</label>
+            <select
+              value={data.sexo}
+              onChange={(e) => setData("sexo", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+            {errors.sexo && <p className="text-red-500 text-sm mt-1">{errors.sexo}</p>}
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Nacionalidade:</label>
+            <input
+              type="text"
+              placeholder="Nacionalidade"
+              value={data.nacionalidade}
+              onChange={(e) => setData("nacionalidade", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {errors.nacionalidade && <p className="text-red-500 text-sm mt-1">{errors.nacionalidade}</p>}
+          </div>
+        </div>
+
+        {/* Período e Email */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Período:</label>
+            <select
+              value={data.periodo}
+              onChange={(e) => setData("periodo", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="Laboral">Laboral</option>
+              <option value="Pós-Laboral">Pós-Laboral</option>
+            </select>
+            {errors.periodo && <p className="text-red-500 text-sm mt-1">{errors.periodo}</p>}
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Email:</label>
+            <input
+              type="email"
+              placeholder="Email"
+              value={data.email}
+              onChange={(e) => setData("email", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+          </div>
+        </div>
+
+        {/* Contacto e Ano Matrícula */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Contacto:</label>
+            <input
+              type="text"
+              placeholder="Contacto"
+              value={data.contacto}
+              onChange={(e) => setData("contacto", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {errors.contacto && <p className="text-red-500 text-sm mt-1">{errors.contacto}</p>}
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">Ano Matrícula:</label>
+            <input
+              type="number"
+              placeholder="Ano Matrícula"
+              value={data.ano_matricula}
+              onChange={(e) => setData("ano_matricula", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              min="2000"
+              max={new Date().getFullYear() + 1}
+            />
+            {errors.ano_matricula && <p className="text-red-500 text-sm mt-1">{errors.ano_matricula}</p>}
+          </div>
         </div>
 
         {/* Curso */}

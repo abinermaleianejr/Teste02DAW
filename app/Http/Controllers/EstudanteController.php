@@ -9,11 +9,38 @@ use Inertia\Inertia;
 
 class EstudanteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $estudantes = Estudante::with('curso')->get();
+        $query = Estudante::with('curso');
+        
+        // Filtros
+        if ($request->has('nome') && $request->nome) {
+            $query->where('nome', 'LIKE', "%{$request->nome}%");
+        }
+        
+        if ($request->has('apelido') && $request->apelido) {
+            $query->where('apelido', 'LIKE', "%{$request->apelido}%");
+        }
+        
+        if ($request->has('ano_matricula') && $request->ano_matricula) {
+            $query->where('ano_matricula', $request->ano_matricula);
+        }
+        
+        $estudantes = $query->get();
+        
+        // Estatísticas
+        $totalEstudantes = Estudante::count();
+        $totalMasculino = Estudante::where('sexo', 'M')->count();
+        $totalFeminino = Estudante::where('sexo', 'F')->count();
+        
         return Inertia::render('Estudantes/Index', [
-            'c_estudantes' => $estudantes
+            'c_estudantes' => $estudantes,
+            'filters' => $request->only(['nome', 'apelido', 'ano_matricula']),
+            'estatisticas' => [
+                'total' => $totalEstudantes,
+                'masculino' => $totalMasculino,
+                'feminino' => $totalFeminino
+            ]
         ]);
     }
 
@@ -32,6 +59,12 @@ class EstudanteController extends Controller
             'apelido' => 'required',
             'nome' => 'required',
             'curso_id' => 'required|exists:cursos,id',
+            'sexo' => 'required|in:M,F',
+            'nacionalidade' => 'required',
+            'periodo' => 'required|in:Laboral,Pós-Laboral',
+            'email' => 'required|email|unique:estudantes',
+            'contacto' => 'nullable',
+            'ano_matricula' => 'required|integer|min:2000|max:' . (date('Y') + 1)
         ]);
 
         Estudante::create($request->all());
@@ -47,38 +80,32 @@ class EstudanteController extends Controller
         ]);
     }
 
-public function verEstudante(Estudante $estudante)
-{
-    // Carregar o estudante e suas disciplinas (via tabela pivot 'inscricoes')
-    $estudante->load('disciplinas');
-
-    // Retornar os dados para o componente Inertia
-    return inertia('Estudantes/Ver', [
-        'estudante' => $estudante,
-        'disciplinas' => $estudante->disciplinas,
-    ]);
-}
-public function buscarInscricoes(Request $request, Estudante $estudante)
-{
-    $ano = $request->query('ano');
-
-    // Cria a query base do relacionamento
-    $disciplinasQuery = $estudante->disciplinas();
-
-    // Se o ano foi informado, filtra pelo ano na data de inscrição (campo pivot)
-    if ($ano) {
-        $disciplinasQuery->whereYear('inscricoes.data_inscricao', $ano);
+    public function verEstudante(Estudante $estudante)
+    {
+        $estudante->load('disciplinas');
+        return inertia('Estudantes/Ver', [
+            'estudante' => $estudante,
+            'disciplinas' => $estudante->disciplinas,
+        ]);
     }
 
-    $disciplinas = $disciplinasQuery->get();
+    public function buscarInscricoes(Request $request, Estudante $estudante)
+    {
+        $ano = $request->query('ano');
+        $disciplinasQuery = $estudante->disciplinas();
 
-    // Retorna os dados para o componente Inertia
-    return inertia('Estudantes/Ver', [
-        'estudante' => $estudante,
-        'disciplinas' => $disciplinas,
-        // 'ano_filtrado' => $ano,
-    ]);
-}
+        if ($ano) {
+            $disciplinasQuery->whereYear('inscricoes.data_inscricao', $ano);
+        }
+
+        $disciplinas = $disciplinasQuery->get();
+
+        return inertia('Estudantes/Ver', [
+            'estudante' => $estudante,
+            'disciplinas' => $disciplinas,
+        ]);
+    }
+
     public function update(Request $request, Estudante $estudante)
     {
         $request->validate([
@@ -86,6 +113,12 @@ public function buscarInscricoes(Request $request, Estudante $estudante)
             'apelido' => 'required',
             'nome' => 'required',
             'curso_id' => 'required|exists:cursos,id',
+            'sexo' => 'required|in:M,F',
+            'nacionalidade' => 'required',
+            'periodo' => 'required|in:Laboral,Pós-Laboral',
+            'email' => 'required|email|unique:estudantes,email,' . $estudante->id,
+            'contacto' => 'nullable',
+            'ano_matricula' => 'required|integer|min:2000|max:' . (date('Y') + 1)
         ]);
 
         $estudante->update($request->all());
@@ -97,6 +130,4 @@ public function buscarInscricoes(Request $request, Estudante $estudante)
         $estudante->delete();
         return redirect()->route('estudantes.index');
     }
-
-
 }

@@ -10,7 +10,10 @@ class DisciplinaController extends Controller
 {
     public function index()
     {
-        $disciplinas = Disciplina::all();
+        $disciplinas = Disciplina::withCount(['inscricoes as inscritos_ano_corrente' => function($query) {
+            $query->whereYear('data_inscricao', date('Y'));
+        }])->get();
+
         return Inertia::render('Disciplinas/Index', [
             'c_disciplinas' => $disciplinas
         ]);
